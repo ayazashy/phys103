@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import katex from 'katex';
 import {
   Video,
   ExternalLink,
@@ -41,66 +42,26 @@ export const ExperimentIcon: React.FC<{ icon: ExperimentIconKey; className?: str
 };
 
 // ==========================================
-// KATEX & LATEX RENDERER
+// KATEX & LATEX RENDERER (STATICALLY BUNDLED)
 // ==========================================
-function useKatexLoaded() {
-  const [loaded, setLoaded] = useState(() => typeof window !== 'undefined' && !!(window as any).katex);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if ((window as any).katex) {
-      setLoaded(true);
-      return;
-    }
-
-    if (!document.getElementById('katex-css')) {
-      const link = document.createElement('link');
-      link.id = 'katex-css';
-      link.rel = 'stylesheet';
-      link.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css';
-      document.head.appendChild(link);
-    }
-
-    const scriptId = 'katex-js';
-    let script = document.getElementById(scriptId) as HTMLScriptElement | null;
-    if (!script) {
-      script = document.createElement('script');
-      script.id = scriptId;
-      script.src = 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js';
-      script.async = true;
-      document.head.appendChild(script);
-    }
-
-    const onScriptLoad = () => setLoaded(true);
-    script.addEventListener('load', onScriptLoad);
-    return () => {
-      script?.removeEventListener('load', onScriptLoad);
-    };
-  }, []);
-
-  return loaded;
-}
-
 export interface LatexProps {
   math: string;
   block?: boolean;
   className?: string;
 }
 
-export const Latex: React.FC<LatexProps> = ({ math, block = false, className = '' }) => {
-  const katexLoaded = useKatexLoaded();
-
+export const Latex: React.FC<LatexProps> = React.memo(({ math, block = false, className = '' }) => {
   const renderedHtml = useMemo(() => {
-    if (typeof window === 'undefined' || !(window as any).katex || !math) return null;
+    if (!math) return null;
     try {
-      return (window as any).katex.renderToString(math, {
+      return katex.renderToString(math, {
         displayMode: block,
         throwOnError: false
       });
     } catch {
       return null;
     }
-  }, [math, block, katexLoaded]);
+  }, [math, block]);
 
   if (renderedHtml) {
     if (block) {
@@ -133,10 +94,10 @@ export const Latex: React.FC<LatexProps> = ({ math, block = false, className = '
       {math}
     </span>
   );
-};
+});
 
 // Parses inline $...$ LaTeX segments inside Arabic/English prose cleanly
-export const MathText: React.FC<{ text: string; className?: string }> = ({ text, className = '' }) => {
+export const MathText: React.FC<{ text: string; className?: string }> = React.memo(({ text, className = '' }) => {
   const parts = useMemo(() => {
     if (!text) return [];
     // Split on $...$ non-greedily
@@ -154,7 +115,7 @@ export const MathText: React.FC<{ text: string; className?: string }> = ({ text,
       })}
     </span>
   );
-};
+});
 
 // ==========================================
 // GOOGLE DRIVE EMBEDDED VIDEO PLAYER CARD
@@ -168,6 +129,7 @@ export const VideoEmbedCard: React.FC<VideoEmbedCardProps> = ({ exp, defaultOpen
   const [expanded, setExpanded] = useState(defaultOpen);
   const [playerMode, setPlayerMode] = useState<'native' | 'drive'>('native');
   const [nativeFailed, setNativeFailed] = useState(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   // Reset fallback when switching experiments
   useEffect(() => {
@@ -181,6 +143,22 @@ export const VideoEmbedCard: React.FC<VideoEmbedCardProps> = ({ exp, defaultOpen
   const nativeVideoSrc = isDev
     ? `${normalizedBase}api/video/${exp.videoDriveId}`
     : `${normalizedBase}videos/${exp.id}.mp4`;
+
+  // Explicitly tear down Android/mobile hardware video decoders when switching experiments or hiding video
+  useEffect(() => {
+    const el = videoRef.current;
+    return () => {
+      if (el) {
+        try {
+          el.pause();
+          el.removeAttribute('src');
+          el.load();
+        } catch {
+          // Ignore teardown cleanup errors
+        }
+      }
+    };
+  }, [nativeVideoSrc, playerMode, expanded]);
 
   return (
     <div className="w-full max-w-full min-w-0 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
@@ -257,11 +235,12 @@ export const VideoEmbedCard: React.FC<VideoEmbedCardProps> = ({ exp, defaultOpen
             >
               {playerMode === 'native' && !nativeFailed ? (
                 <video
+                  ref={videoRef}
                   key={nativeVideoSrc}
                   src={nativeVideoSrc}
                   controls
                   playsInline
-                  preload="metadata"
+                  preload="none"
                   className="block absolute inset-0 w-full h-full max-w-full max-h-full object-contain bg-black"
                   onError={() => {
                     setNativeFailed(true);

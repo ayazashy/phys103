@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   BookOpen,
   CheckCircle2,
@@ -188,23 +188,31 @@ export default function App() {
   // Table Trainer State (persisted per experiment in localStorage)
   const [tableDrafts, setTableDrafts] = useState<Record<string, TableDraft>>(() => {
     const saved = readStorage<Record<string, TableDraft>>(STORAGE_KEYS.tableDrafts, {});
-    return saved && typeof saved === 'object' ? saved : {};
+    return saved && typeof saved === 'object' && !Array.isArray(saved) ? saved : {};
   });
   useEffect(() => {
     writeStorage(STORAGE_KEYS.tableDrafts, tableDrafts);
   }, [tableDrafts]);
 
-  const currentDraft = tableDrafts[selectedExpId] || { selections: {}, calcInput: '' };
-  const tableSelections = currentDraft.selections || {};
-  const calcInput = currentDraft.calcInput || '';
+  const rawDraft = tableDrafts[selectedExpId];
+  const currentDraft: TableDraft =
+    rawDraft && typeof rawDraft === 'object' && !Array.isArray(rawDraft)
+      ? rawDraft
+      : { selections: {}, calcInput: '' };
+  const tableSelections =
+    currentDraft.selections && typeof currentDraft.selections === 'object' && !Array.isArray(currentDraft.selections)
+      ? currentDraft.selections
+      : {};
+  const calcInput = typeof currentDraft.calcInput === 'string' ? currentDraft.calcInput : '';
 
   const setTableSelections = (nextSelections: Record<string, string>) => {
     setTableDrafts((prev) => {
+      const prevEntry = prev[selectedExpId];
       const next = {
         ...prev,
         [selectedExpId]: {
           selections: nextSelections,
-          calcInput: prev[selectedExpId]?.calcInput || ''
+          calcInput: typeof prevEntry?.calcInput === 'string' ? prevEntry.calcInput : ''
         }
       };
       writeStorage(STORAGE_KEYS.tableDrafts, next);
@@ -214,10 +222,14 @@ export default function App() {
 
   const setCalcInput = (nextCalcInput: string) => {
     setTableDrafts((prev) => {
+      const prevEntry = prev[selectedExpId];
       const next = {
         ...prev,
         [selectedExpId]: {
-          selections: prev[selectedExpId]?.selections || {},
+          selections:
+            prevEntry?.selections && typeof prevEntry.selections === 'object' && !Array.isArray(prevEntry.selections)
+              ? prevEntry.selections
+              : {},
           calcInput: nextCalcInput
         }
       };
@@ -236,6 +248,16 @@ export default function App() {
   const [examSubmitted, setExamSubmitted] = useState<boolean>(false);
   const [examSaved, setExamSaved] = useState<boolean>(false);
   const [isDrawingRandom, setIsDrawingRandom] = useState<boolean>(false);
+  const randomTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (randomTimerRef.current) {
+        clearInterval(randomTimerRef.current);
+        randomTimerRef.current = null;
+      }
+    };
+  }, []);
 
   const [examAnswers, setExamAnswers] = useState<ExamAnswers>({
     q1GoalChoice: '',
@@ -342,18 +364,25 @@ export default function App() {
 
   const startExamSimulation = (mode: 'random' | 'selected' = 'random', targetExp: Experiment | null = null) => {
     resetExamAnswers();
+    if (randomTimerRef.current) {
+      clearInterval(randomTimerRef.current);
+      randomTimerRef.current = null;
+    }
 
     if (mode === 'random') {
       setIsDrawingRandom(true);
       setActiveTab('examSim');
       setExamStarted(false);
       let counter = 0;
-      const interval = setInterval(() => {
+      randomTimerRef.current = setInterval(() => {
         const randomIndex = Math.floor(Math.random() * EXPERIMENTS.length);
         setExamExp(EXPERIMENTS[randomIndex]);
         counter++;
         if (counter > 8) {
-          clearInterval(interval);
+          if (randomTimerRef.current) {
+            clearInterval(randomTimerRef.current);
+            randomTimerRef.current = null;
+          }
           const finalPick = EXPERIMENTS[Math.floor(Math.random() * EXPERIMENTS.length)];
           setExamExp(finalPick);
           setSelectedExpId(finalPick.id);
@@ -652,7 +681,7 @@ export default function App() {
       className="min-h-screen w-full max-w-full overflow-x-clip bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-['Tajawal',sans-serif] selection:bg-indigo-500 selection:text-white pb-20 transition-colors"
     >
       {/* HEADER */}
-      <header className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-sm transition-colors">
+      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-sm transition-colors">
         <div className="max-w-6xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-3">
           {/* University Identity & Title */}
           <div className="flex items-center gap-3 min-w-0">
@@ -1929,8 +1958,13 @@ export default function App() {
                         setExamSubmitted(true);
                         setExamSaved(false);
                         setTimeout(() => {
-                          const el = document.getElementById('exam-grading-report');
-                          if (el) el.scrollIntoView({ behavior: 'smooth' });
+                          try {
+                            const el = document.getElementById('exam-grading-report');
+                            if (el) el.scrollIntoView({ behavior: 'smooth' });
+                          } catch {
+                            const el = document.getElementById('exam-grading-report');
+                            if (el) el.scrollIntoView();
+                          }
                         }, 100);
                       }}
                       className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm shadow transition cursor-pointer inline-flex items-center justify-center gap-1.5"

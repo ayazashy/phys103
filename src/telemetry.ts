@@ -173,9 +173,11 @@ function buildPayload() {
 function saveLocalBackup() {
   try {
     const payload = buildPayload();
+    if (!payload.uid) return;
     const rawLocal = localStorage.getItem('_site_analytics_backup') || '{}';
-    const store = JSON.parse(rawLocal);
-    if (!store.visitors) store.visitors = {};
+    const parsed = JSON.parse(rawLocal);
+    const store = parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+    if (!store.visitors || typeof store.visitors !== 'object') store.visitors = {};
     store.visitors[payload.uid] = {
       ...payload,
       lastSeen: new Date().toISOString()
@@ -183,7 +185,7 @@ function saveLocalBackup() {
     store.totalVisitors = Object.keys(store.visitors).length;
     localStorage.setItem('_site_analytics_backup', JSON.stringify(store));
   } catch {
-    // Ignore storage quota errors cleanly
+    // Ignore storage quota or serialization errors cleanly
   }
 }
 

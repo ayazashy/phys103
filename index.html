@@ -12,10 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap"
     rel="stylesheet" />
 
-  <!-- KaTeX CSS for LaTeX rendering -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-
-  <!-- Tailwind CSS CDN -->
+  <!-- Restore Dark Mode Preference Before First Paint -->
   <script>
     try {
       if (JSON.parse(localStorage.getItem('phys103_dark_mode_v1') || 'false') === true) {
@@ -23,75 +20,6 @@
       }
     } catch (e) {}
   </script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Tajawal', 'sans-serif'],
-            tajawal: ['Tajawal', 'sans-serif']
-          }
-        }
-      }
-    }
-  </script>
-
-  <style>
-    :root,
-    html,
-    body {
-      font-family: 'Tajawal', sans-serif !important;
-      overflow-x: clip;
-      max-width: 100%;
-    }
-
-    video,
-    iframe {
-      max-width: 100%;
-    }
-
-    .katex {
-      color: inherit !important;
-    }
-
-    .katex,
-    .katex * {
-      font-family: KaTeX_Main, KaTeX_Math, KaTeX_AMS, 'Times New Roman', serif !important;
-      color: inherit !important;
-    }
-
-    .katex-display {
-      margin: 0.35rem 0 !important;
-      max-width: 100%;
-      overflow-x: auto !important;
-      overflow-y: visible !important;
-      padding: 0.25rem 0 !important;
-    }
-
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-
-    @media print {
-
-      header,
-      .no-print {
-        display: none !important;
-      }
-
-      body {
-        background: #ffffff !important;
-        color: #000000 !important;
-      }
-    }
-  </style>
 </head>
 
 <body class="bg-slate-50 dark:bg-slate-950 min-h-screen text-slate-900 dark:text-slate-100 font-sans">
