@@ -322,10 +322,10 @@ export default function App() {
       isCorrect: q2LawCorrect && q2UnitCorrect,
       userAns: (
         <span className="inline-flex flex-wrap items-center gap-1.5">
-          {examAnswers.q2FormulaChoice ? <Latex math={examAnswers.q2FormulaChoice} /> : '—'}
+          {examAnswers.q2FormulaChoice ? <Latex math={examAnswers.q2FormulaChoice} /> : '-'}
           <span className="text-slate-400">|</span>
           <span>وحدة (<Latex math={examOptions.targetSym?.symLatex || examOptions.targetSym?.sym} />):</span>
-          {examAnswers.q2UnitChoice ? <Latex math={toLatexLabel(examAnswers.q2UnitChoice)} /> : '—'}
+          {examAnswers.q2UnitChoice ? <Latex math={toLatexLabel(examAnswers.q2UnitChoice)} /> : '-'}
         </span>
       ),
       correctAns: (
@@ -354,9 +354,9 @@ export default function App() {
       userAns: (
         <span className="inline-flex flex-wrap items-center gap-1.5">
           <span>العمود:</span>
-          {examAnswers.q3ColHeaderChoice ? <Latex math={toLatexLabel(examAnswers.q3ColHeaderChoice)} /> : '—'}
+          {examAnswers.q3ColHeaderChoice ? <Latex math={toLatexLabel(examAnswers.q3ColHeaderChoice)} /> : '-'}
           <span className="text-slate-400">|</span>
-          <span>الناتج: {examAnswers.q3CalcValue || '—'}</span>
+          <span>الناتج: {examAnswers.q3CalcValue || '-'}</span>
         </span>
       ),
       correctAns: (
@@ -364,7 +364,7 @@ export default function App() {
           <span>العمود:</span>
           <Latex math={targetCol.headerLatex || toLatexLabel(targetCol.correctHeader)} />
           <span className="text-slate-400">|</span>
-          <span>الناتج: {examExp.tableConfig.calcDrill.correctValue} —</span>
+          <span>الناتج: {examExp.tableConfig.calcDrill.correctValue} -</span>
           <MathText text={examExp.tableConfig.calcDrill.explanation} />
         </span>
       )
@@ -384,11 +384,11 @@ export default function App() {
         isCorrect: q4YCorrect && q4XCorrect && q4OriginCorrect,
         userAns: (
           <span className="inline-flex flex-wrap items-center gap-1.5">
-            <span>Y: {examAnswers.q4ChoiceA ? <Latex math={toLatexLabel(examAnswers.q4ChoiceA)} /> : '—'}</span>
+            <span>Y: {examAnswers.q4ChoiceA ? <Latex math={toLatexLabel(examAnswers.q4ChoiceA)} /> : '-'}</span>
             <span className="text-slate-400">|</span>
-            <span>X: {examAnswers.q4ChoiceB ? <Latex math={toLatexLabel(examAnswers.q4ChoiceB)} /> : '—'}</span>
+            <span>X: {examAnswers.q4ChoiceB ? <Latex math={toLatexLabel(examAnswers.q4ChoiceB)} /> : '-'}</span>
             <span className="text-slate-400">|</span>
-            <span>{examAnswers.q4ChoiceC || '—'}</span>
+            <span>{examAnswers.q4ChoiceC || '-'}</span>
           </span>
         ),
         correctAns: (
@@ -427,14 +427,14 @@ export default function App() {
         examExp.kind === 'linear'
           ? 'س5: حساب ميل الخط المستقيم ووحدته'
           : examExp.kind === 'vector'
-          ? 'س5: طول سهم المحصلة بالرسم البياني'
-          : 'س5: حساب الكمية المرحلية (الطاقة / فرق الحرارة)',
+            ? 'س5: طول سهم المحصلة بالرسم البياني'
+            : 'س5: حساب الكمية المرحلية (الطاقة / فرق الحرارة)',
       isCorrect: q5ValCorrect && q5UnitCorrect,
       userAns: (
         <span className="inline-flex flex-wrap items-center gap-1.5">
-          <span>القيمة: {examAnswers.q5Value || '—'}</span>
+          <span>القيمة: {examAnswers.q5Value || '-'}</span>
           <span className="text-slate-400">|</span>
-          <span>الوحدة: {examAnswers.q5Unit ? <Latex math={toLatexLabel(examAnswers.q5Unit)} /> : '—'}</span>
+          <span>الوحدة: {examAnswers.q5Unit ? <Latex math={toLatexLabel(examAnswers.q5Unit)} /> : '-'}</span>
         </span>
       ),
       correctAns: (
@@ -463,9 +463,9 @@ export default function App() {
       isCorrect: q6ValCorrect && q6UnitCorrect,
       userAns: (
         <span className="inline-flex flex-wrap items-center gap-1.5">
-          <span>الناتج: {examAnswers.q6FinalValue || '—'}</span>
+          <span>الناتج: {examAnswers.q6FinalValue || '-'}</span>
           <span className="text-slate-400">|</span>
-          <span>الوحدة: {examAnswers.q6FinalUnit ? <Latex math={toLatexLabel(examAnswers.q6FinalUnit)} /> : '—'}</span>
+          <span>الوحدة: {examAnswers.q6FinalUnit ? <Latex math={toLatexLabel(examAnswers.q6FinalUnit)} /> : '-'}</span>
         </span>
       ),
       correctAns: (
@@ -531,11 +531,11 @@ export default function App() {
               <div className="flex items-center gap-1.5 text-[11px] font-bold text-indigo-700 dark:text-indigo-400 truncate">
                 <span>جامعة الملك سعود</span>
                 <span className="text-slate-400">•</span>
-                <span className="hidden sm:inline">كلية العلوم — قسم الفيزياء والفلك</span>
+                <span className="hidden sm:inline">كلية العلوم - قسم الفيزياء والفلك</span>
                 <span className="sm:hidden">قسم الفيزياء والفلك</span>
               </div>
               <h1 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white truncate">
-                مراجعة التجارب العملية — مقرر 103 فيز
+                مراجعة التجارب العملية - مقرر 103 فيز
               </h1>
             </div>
           </div>
@@ -594,11 +594,10 @@ export default function App() {
                   setActiveTab(tab.id);
                   setShowAllGrid(false);
                 }}
-                className={`flex items-center gap-1.5 px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 transition-all cursor-pointer ${
-                  active
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 transition-all cursor-pointer ${active
                     ? 'border-indigo-600 text-indigo-700 dark:border-indigo-400 dark:text-indigo-400 bg-indigo-50/60 dark:bg-indigo-950/30'
                     : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                }`}
+                  }`}
               >
                 <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span>{tab.label}</span>
@@ -616,11 +615,10 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setShowAllGrid((prev) => !prev)}
-                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-extrabold whitespace-nowrap border transition cursor-pointer shrink-0 ${
-                  showAllGrid
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-extrabold whitespace-nowrap border transition cursor-pointer shrink-0 ${showAllGrid
                     ? 'bg-slate-900 text-white border-slate-900 dark:bg-white dark:text-slate-900'
                     : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:border-indigo-400'
-                }`}
+                  }`}
               >
                 <Grid className="w-3.5 h-3.5" />
                 <span>الفهرس (10)</span>
@@ -642,11 +640,10 @@ export default function App() {
                           startExamSimulation('selected', exp);
                         }
                       }}
-                      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition cursor-pointer shrink-0 border ${
-                        isSelected
+                      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition cursor-pointer shrink-0 border ${isSelected
                           ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
                           : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-slate-600'
-                      }`}
+                        }`}
                     >
                       <ExperimentIcon icon={exp.icon} className="w-3.5 h-3.5 shrink-0" />
                       <span>
@@ -677,11 +674,10 @@ export default function App() {
                           startExamSimulation('selected', exp);
                         }
                       }}
-                      className={`p-3 rounded-xl border text-right transition cursor-pointer flex flex-col justify-between gap-2 min-w-0 ${
-                        isSelected
+                      className={`p-3 rounded-xl border text-right transition cursor-pointer flex flex-col justify-between gap-2 min-w-0 ${isSelected
                           ? 'bg-indigo-50 dark:bg-indigo-950/50 border-indigo-500 ring-1 ring-indigo-500'
                           : 'bg-slate-50/70 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 hover:border-indigo-400'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center justify-between w-full">
                         <span className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
@@ -726,12 +722,12 @@ export default function App() {
         {activeTab === 'study' && (
           <div className="space-y-4 min-w-0">
             {/* Experiment Header Card */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 min-w-0">
-              <div className="flex items-center gap-3 min-w-0">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3 min-w-0">
+              <div className="flex items-center gap-3 w-full md:w-auto md:flex-1 min-w-0">
                 <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-900 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                   <ExperimentIcon icon={currentExp.icon} className="w-5 h-5" />
                 </div>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-1.5">
                     <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
                       التجربة {currentExp.number} من 10
@@ -743,24 +739,23 @@ export default function App() {
                       {currentExp.badge}
                     </span>
                   </div>
-                  <h2 className="text-base sm:text-xl font-extrabold text-slate-900 dark:text-white mt-1 break-words">
+                  <h2 className="text-base sm:text-xl font-extrabold text-slate-900 dark:text-white mt-1">
                     {currentExp.title}
                   </h2>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 self-stretch sm:self-auto shrink-0">
+              <div className="flex items-center gap-2 self-stretch md:self-auto shrink-0">
                 <button
                   type="button"
                   onClick={() => {
                     setHideAnswersInStudy(!hideAnswersInStudy);
                     setRevealedCards({});
                   }}
-                  className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border transition cursor-pointer ${
-                    hideAnswersInStudy
+                  className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border transition cursor-pointer ${hideAnswersInStudy
                       ? 'bg-amber-500 text-slate-950 border-amber-500'
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:border-indigo-300'
-                  }`}
+                    }`}
                 >
                   {hideAnswersInStudy ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
                   <span>{hideAnswersInStudy ? 'وضع الشرح' : 'تسميع ذاتي'}</span>
@@ -769,11 +764,10 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => markPillarDone(currentExp.id, 'theory')}
-                  className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
-                    mastery[currentExp.id]?.theory
+                  className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${mastery[currentExp.id]?.theory
                       ? 'bg-emerald-600 text-white shadow-sm'
                       : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm'
-                  }`}
+                    }`}
                 >
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   <span>{mastery[currentExp.id]?.theory ? 'تمت المراجعة' : 'توثيق المراجعة'}</span>
@@ -943,7 +937,7 @@ export default function App() {
                               </td>
                               {currentExp.kind === 'calorimetry' && (
                                 <td className="p-2 font-mono text-center text-slate-700 dark:text-slate-300" dir="ltr">
-                                  {s.sampleVal || '—'}
+                                  {s.sampleVal || '-'}
                                 </td>
                               )}
                             </tr>
@@ -1018,7 +1012,7 @@ export default function App() {
                                 key={col.id}
                                 className="p-2 border border-slate-200 dark:border-slate-700/60 font-mono text-slate-700 dark:text-slate-300"
                               >
-                                {col.sampleValues[rowIdx] || '—'}
+                                {col.sampleValues[rowIdx] || '-'}
                               </td>
                             ))}
                           </tr>
@@ -1052,8 +1046,8 @@ export default function App() {
                     {currentExp.kind === 'linear'
                       ? 'التحليل البياني، حساب الميل، واستنتاج النتيجة النهائية'
                       : currentExp.kind === 'vector'
-                      ? 'مقارنة الطرق الثلاث والرسم البياني للمتجهات'
-                      : 'التطبيق الحسابي لمبدأ حفظ الطاقة والنتيجة النهائية'}
+                        ? 'مقارنة الطرق الثلاث والرسم البياني للمتجهات'
+                        : 'التطبيق الحسابي لمبدأ حفظ الطاقة والنتيجة النهائية'}
                   </h3>
                 </div>
               </div>
@@ -1233,7 +1227,7 @@ export default function App() {
                     التدريب التفاعلي على الجداول والوحدات
                   </span>
                   <h2 className="text-base sm:text-lg font-extrabold mt-1 text-slate-900 dark:text-white">
-                    إكمال الجدول والعمليات الحسابية — {currentExp.number}. {currentExp.title}
+                    إكمال الجدول والعمليات الحسابية - {currentExp.number}. {currentExp.title}
                   </h2>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                     حدد العنوان والوحدة الصحيحة لكل عمود، ثم أدخل الناتج العددي في فقرة التطبيق الحسابي أدناه:
@@ -1264,13 +1258,12 @@ export default function App() {
                         return (
                           <th
                             key={col.id}
-                            className={`p-2.5 border-2 transition min-w-[190px] ${
-                              isSubmittedAndCorrect
+                            className={`p-2.5 border-2 transition min-w-[190px] ${isSubmittedAndCorrect
                                 ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-500'
                                 : isSubmittedAndWrong
-                                ? 'bg-rose-50 dark:bg-rose-950/60 border-rose-500'
-                                : 'bg-indigo-50/50 dark:bg-slate-800/80 border-indigo-300 dark:border-slate-700'
-                            }`}
+                                  ? 'bg-rose-50 dark:bg-rose-950/60 border-rose-500'
+                                  : 'bg-indigo-50/50 dark:bg-slate-800/80 border-indigo-300 dark:border-slate-700'
+                              }`}
                           >
                             <div className="text-[11px] font-bold text-indigo-600 dark:text-indigo-300 mb-2" dir="rtl">
                               المطلوب ({idx + 1}): {col.labelAr}
@@ -1283,11 +1276,10 @@ export default function App() {
                                     key={i}
                                     type="button"
                                     onClick={() => setTableSelections({ ...tableSelections, [col.id]: opt })}
-                                    className={`w-full px-2 py-1.5 rounded-lg border text-xs font-bold transition cursor-pointer flex items-center justify-center ${
-                                      isChosen
+                                    className={`w-full px-2 py-1.5 rounded-lg border text-xs font-bold transition cursor-pointer flex items-center justify-center ${isChosen
                                         ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
                                         : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:border-indigo-400'
-                                    }`}
+                                      }`}
                                     dir="ltr"
                                   >
                                     <Latex math={toLatexLabel(opt)} />
@@ -1349,11 +1341,10 @@ export default function App() {
 
                 {tableFeedback && (
                   <div
-                    className={`p-3 rounded-lg border text-xs sm:text-sm space-y-1 ${
-                      tableFeedback.allHeadersCorrect && tableFeedback.isCalcCorrect
+                    className={`p-3 rounded-lg border text-xs sm:text-sm space-y-1 ${tableFeedback.allHeadersCorrect && tableFeedback.isCalcCorrect
                         ? 'bg-emerald-50 dark:bg-emerald-950/50 border-emerald-400 text-emerald-900 dark:text-emerald-200'
                         : 'bg-amber-50 dark:bg-amber-950/50 border-amber-400 text-amber-900 dark:text-amber-200'
-                    }`}
+                      }`}
                   >
                     <div className="font-extrabold flex items-center gap-2">
                       {tableFeedback.allHeadersCorrect && tableFeedback.isCalcCorrect ? (
@@ -1403,7 +1394,7 @@ export default function App() {
               <div>
                 <h2 className="text-sm sm:text-base font-extrabold flex items-center gap-2 text-slate-900 dark:text-white">
                   <ClipboardCheck className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                  <span>نموذج التقييم العملي — قسم الفيزياء والفلك</span>
+                  <span>نموذج التقييم العملي - قسم الفيزياء والفلك</span>
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   ورقة تقييم تفاعلية مطابقة لهيكلة الاختبار العملي لجميع التجارب العشر.
@@ -1465,7 +1456,7 @@ export default function App() {
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 items-center text-xs font-bold text-slate-700 dark:text-slate-300">
                     <div className="text-right">كلية العلوم • قسم الفيزياء والفلك</div>
                     <div className="text-center sm:text-base font-extrabold text-indigo-950 dark:text-white">
-                      جامعة الملك سعود — الاختبار العملي
+                      جامعة الملك سعود - الاختبار العملي
                     </div>
                     <div className="sm:text-left" dir="rtl">
                       المقرر: 103 فيز • المدة: ساعة ونصف
@@ -1491,11 +1482,10 @@ export default function App() {
                           key={i}
                           type="button"
                           onClick={() => setExamAnswers({ ...examAnswers, q1GoalChoice: g })}
-                          className={`p-2.5 rounded-lg border text-right text-xs font-medium transition cursor-pointer min-h-[44px] ${
-                            examAnswers.q1GoalChoice === g
+                          className={`p-2.5 rounded-lg border text-right text-xs font-medium transition cursor-pointer min-h-[44px] ${examAnswers.q1GoalChoice === g
                               ? 'bg-indigo-600 text-white border-indigo-600 font-bold shadow-sm'
                               : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-indigo-400'
-                          }`}
+                            }`}
                         >
                           <MathText text={g} />
                         </button>
@@ -1517,11 +1507,10 @@ export default function App() {
                               key={i}
                               type="button"
                               onClick={() => setExamAnswers({ ...examAnswers, q2FormulaChoice: f })}
-                              className={`w-full p-2.5 rounded-lg border text-xs text-center transition cursor-pointer min-h-[44px] flex items-center justify-center ${
-                                examAnswers.q2FormulaChoice === f
+                              className={`w-full p-2.5 rounded-lg border text-xs text-center transition cursor-pointer min-h-[44px] flex items-center justify-center ${examAnswers.q2FormulaChoice === f
                                   ? 'bg-indigo-600 text-white border-indigo-600 font-bold shadow-sm'
                                   : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-indigo-400'
-                              }`}
+                                }`}
                               dir="ltr"
                             >
                               <Latex math={f} block={true} />
@@ -1540,11 +1529,10 @@ export default function App() {
                               key={i}
                               type="button"
                               onClick={() => setExamAnswers({ ...examAnswers, q2UnitChoice: u })}
-                              className={`p-2.5 rounded-lg border text-xs text-center transition cursor-pointer min-h-[44px] flex items-center justify-center ${
-                                examAnswers.q2UnitChoice === u
+                              className={`p-2.5 rounded-lg border text-xs text-center transition cursor-pointer min-h-[44px] flex items-center justify-center ${examAnswers.q2UnitChoice === u
                                   ? 'bg-indigo-600 text-white border-indigo-600 font-bold shadow-sm'
                                   : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-indigo-400'
-                              }`}
+                                }`}
                               dir="ltr"
                             >
                               <Latex math={toLatexLabel(u)} />
@@ -1577,11 +1565,10 @@ export default function App() {
                               key={i}
                               type="button"
                               onClick={() => setExamAnswers({ ...examAnswers, q3ColHeaderChoice: opt })}
-                              className={`p-2 rounded-lg border text-xs font-bold transition cursor-pointer min-h-[42px] flex items-center justify-center ${
-                                examAnswers.q3ColHeaderChoice === opt
+                              className={`p-2 rounded-lg border text-xs font-bold transition cursor-pointer min-h-[42px] flex items-center justify-center ${examAnswers.q3ColHeaderChoice === opt
                                   ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
                                   : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:border-indigo-400'
-                              }`}
+                                }`}
                               dir="ltr"
                             >
                               <Latex math={toLatexLabel(opt)} />
@@ -1623,11 +1610,10 @@ export default function App() {
                                   key={i}
                                   type="button"
                                   onClick={() => setExamAnswers({ ...examAnswers, q4ChoiceA: y })}
-                                  className={`p-2 rounded-lg border text-xs font-bold transition cursor-pointer min-h-[40px] flex items-center justify-center ${
-                                    examAnswers.q4ChoiceA === y
+                                  className={`p-2 rounded-lg border text-xs font-bold transition cursor-pointer min-h-[40px] flex items-center justify-center ${examAnswers.q4ChoiceA === y
                                       ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
                                       : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-indigo-400'
-                                  }`}
+                                    }`}
                                   dir="ltr"
                                 >
                                   <Latex math={toLatexLabel(y)} />
@@ -1644,11 +1630,10 @@ export default function App() {
                                   key={i}
                                   type="button"
                                   onClick={() => setExamAnswers({ ...examAnswers, q4ChoiceB: x })}
-                                  className={`p-2 rounded-lg border text-xs font-bold transition cursor-pointer min-h-[40px] flex items-center justify-center ${
-                                    examAnswers.q4ChoiceB === x
+                                  className={`p-2 rounded-lg border text-xs font-bold transition cursor-pointer min-h-[40px] flex items-center justify-center ${examAnswers.q4ChoiceB === x
                                       ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
                                       : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-indigo-400'
-                                  }`}
+                                    }`}
                                   dir="ltr"
                                 >
                                   <Latex math={toLatexLabel(x)} />
@@ -1665,11 +1650,10 @@ export default function App() {
                                   key={opt}
                                   type="button"
                                   onClick={() => setExamAnswers({ ...examAnswers, q4ChoiceC: opt })}
-                                  className={`p-2 rounded-lg border text-xs font-bold transition cursor-pointer min-h-[40px] text-center ${
-                                    examAnswers.q4ChoiceC === opt
+                                  className={`p-2 rounded-lg border text-xs font-bold transition cursor-pointer min-h-[40px] text-center ${examAnswers.q4ChoiceC === opt
                                       ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
                                       : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-indigo-400'
-                                  }`}
+                                    }`}
                                 >
                                   {opt}
                                 </button>
@@ -1689,11 +1673,10 @@ export default function App() {
                               key={i}
                               type="button"
                               onClick={() => setExamAnswers({ ...examAnswers, q4ChoiceA: choice })}
-                              className={`p-2.5 rounded-lg border text-right text-xs font-medium transition cursor-pointer min-h-[44px] ${
-                                examAnswers.q4ChoiceA === choice
+                              className={`p-2.5 rounded-lg border text-right text-xs font-medium transition cursor-pointer min-h-[44px] ${examAnswers.q4ChoiceA === choice
                                   ? 'bg-indigo-600 text-white border-indigo-600 font-bold shadow-sm'
                                   : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-indigo-400'
-                              }`}
+                                }`}
                             >
                               <MathText text={choice} />
                             </button>
@@ -1745,11 +1728,10 @@ export default function App() {
                                 key={i}
                                 type="button"
                                 onClick={() => setExamAnswers({ ...examAnswers, q5Unit: u })}
-                                className={`p-2 rounded-lg border text-xs font-bold transition cursor-pointer min-h-[38px] flex items-center justify-center ${
-                                  examAnswers.q5Unit === u
+                                className={`p-2 rounded-lg border text-xs font-bold transition cursor-pointer min-h-[38px] flex items-center justify-center ${examAnswers.q5Unit === u
                                     ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
                                     : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-indigo-400'
-                                }`}
+                                  }`}
                                 dir="ltr"
                               >
                                 <Latex math={toLatexLabel(u)} />
@@ -1785,11 +1767,10 @@ export default function App() {
                                 key={i}
                                 type="button"
                                 onClick={() => setExamAnswers({ ...examAnswers, q6FinalUnit: u })}
-                                className={`p-2 rounded-lg border text-xs font-bold transition cursor-pointer min-h-[38px] flex items-center justify-center ${
-                                  examAnswers.q6FinalUnit === u
+                                className={`p-2 rounded-lg border text-xs font-bold transition cursor-pointer min-h-[38px] flex items-center justify-center ${examAnswers.q6FinalUnit === u
                                     ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
                                     : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-indigo-400'
-                                }`}
+                                  }`}
                                 dir="ltr"
                               >
                                 <Latex math={toLatexLabel(u)} />
@@ -1831,7 +1812,7 @@ export default function App() {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
                       <div>
                         <div className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
-                          نتيجة التقييم — {examExp.title}
+                          نتيجة التقييم - {examExp.title}
                         </div>
                         <h3 className="text-xl font-black mt-0.5">الدرجة: {examEvaluation.score} / 100</h3>
                         <p className="text-xs text-slate-500 mt-0.5">
@@ -1870,18 +1851,16 @@ export default function App() {
                       {examEvaluation.results.map((r) => (
                         <div
                           key={r.qNum}
-                          className={`p-3 rounded-lg border text-xs ${
-                            r.isCorrect
+                          className={`p-3 rounded-lg border text-xs ${r.isCorrect
                               ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800'
                               : 'bg-rose-50/70 dark:bg-rose-950/30 border-rose-300 dark:border-rose-800'
-                          }`}
+                            }`}
                         >
                           <div className="flex items-center justify-between font-extrabold mb-1">
                             <span>{r.title}</span>
                             <span
-                              className={`px-2 py-0.5 rounded text-[11px] inline-flex items-center gap-1 ${
-                                r.isCorrect ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'
-                              }`}
+                              className={`px-2 py-0.5 rounded text-[11px] inline-flex items-center gap-1 ${r.isCorrect ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'
+                                }`}
                             >
                               {r.isCorrect ? (
                                 <>
@@ -1928,7 +1907,7 @@ export default function App() {
                     الملخص الشامل لجميع التجارب المقررة (10 تجارب)
                   </span>
                   <h2 className="text-base sm:text-lg font-extrabold mt-1 text-slate-900 dark:text-white">
-                    مصفوفة مقارنة التجارب العشر — مقرر 103 فيز
+                    مصفوفة مقارنة التجارب العشر - مقرر 103 فيز
                   </h2>
                 </div>
                 <div className="no-print flex items-center gap-2">
@@ -1964,9 +1943,8 @@ export default function App() {
                           setSelectedExpId(exp.id);
                           setActiveTab('study');
                         }}
-                        className={`border-b border-slate-200 dark:border-slate-800 hover:bg-indigo-50/50 dark:hover:bg-slate-800/60 cursor-pointer transition ${
-                          idx % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/60 dark:bg-slate-900/50'
-                        }`}
+                        className={`border-b border-slate-200 dark:border-slate-800 hover:bg-indigo-50/50 dark:hover:bg-slate-800/60 cursor-pointer transition ${idx % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/60 dark:bg-slate-900/50'
+                          }`}
                       >
                         <td className="p-2.5 font-extrabold text-slate-900 dark:text-white whitespace-nowrap">
                           <span className="inline-flex items-center gap-1.5">
@@ -2012,7 +1990,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* Golden Rules — Fixed LaTeX string expressions */}
+            {/* Golden Rules - Fixed LaTeX string expressions */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-3.5">
                 <div className="font-extrabold text-amber-900 dark:text-amber-300 text-xs sm:text-sm mb-1 flex items-center gap-1.5">

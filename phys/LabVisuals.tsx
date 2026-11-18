@@ -184,22 +184,22 @@ export const VideoEmbedCard: React.FC<VideoEmbedCardProps> = ({ exp, defaultOpen
 
   return (
     <div className="w-full max-w-full min-w-0 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-      <div className="px-3 py-3 sm:px-5 bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2.5">
-        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+      <div className="px-3 py-3 sm:px-5 bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 flex flex-col md:flex-row md:items-center md:justify-between gap-2.5">
+        <div className="flex items-center gap-2.5 w-full md:w-auto md:flex-1 min-w-0">
           <div className="w-8 h-8 rounded-lg bg-indigo-600/10 dark:bg-indigo-400/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
             <Video className="w-4 h-4" />
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white leading-snug break-words">
-              الشرح العملي المصور — {exp.shortTitle}
+            <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white leading-snug">
+              الشرح العملي المصور - {exp.shortTitle}
             </h3>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug break-words">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
               عرض تطبيقي لخطوات التجربة وأخذ القراءات داخل المختبر
             </p>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-1.5 max-w-full">
+        <div className="flex flex-wrap items-center gap-1.5 w-full md:w-auto md:shrink-0">
           {expanded && (
             <button
               type="button"
