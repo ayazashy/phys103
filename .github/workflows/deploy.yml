@@ -36,6 +36,39 @@ jobs:
       - name: Build production bundle
         run: npm run build
 
+      - name: Restore cached lab MP4 videos
+        uses: actions/cache@v4
+        with:
+          path: dist/videos
+          key: phys103-mp4-videos-v1
+
+      - name: Fetch and verify lab MP4 videos for same-origin playback
+        run: |
+          mkdir -p dist/videos
+          declare -A VIDEOS=(
+            ["hooke"]="1GJcBNXuujBmKUGnc9jEQp-VXVfN1eOGy"
+            ["boyle"]="1NaIgDhlKJnsJPKGqKRCU91wyzKHMoI6q"
+            ["freefall"]="1PcPuK2JBuNswXKjhOOWs9uVAyT1Q1Fb1"
+            ["viscosity"]="1uYCq4NODZgiwZwyQFENdYhLFjKPzVyUx"
+            ["forcetable"]="1muNa4ov8Ck-yXV9al2KvV9nTVaxlWH29"
+            ["young"]="1pJQ5zLwImNckrozKW5Ad0uWTZA9mkZsL"
+            ["airtrack"]="13tm0T5POl2eoLT-z2m66z3kxfJIM2iAB"
+            ["specificheat"]="1RtuDZgdGOQBagU5YB6JxraWyohhQQRo4"
+            ["joule"]="1sNF2JUqokEgXeXPCWRF0U23WOmhhEruc"
+            ["sound"]="1pxSKznbGZ1S8kna0SbCCMu-kTqMnhLb0"
+          )
+          for name in "${!VIDEOS[@]}"; do
+            id="${VIDEOS[$name]}"
+            target="dist/videos/${name}.mp4"
+            if [ ! -s "$target" ] || [ "$(wc -c < "$target")" -lt 1000000 ]; then
+              echo "Downloading $name ($id)..."
+              curl -fsSL --retry 3 "https://drive.usercontent.google.com/download?id=${id}&export=download" -o "$target"
+            else
+              echo "Using cached $target"
+            fi
+          done
+          ls -lh dist/videos
+
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

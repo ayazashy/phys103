@@ -128,6 +128,21 @@ interface VideoEmbedCardProps {
 
 export const VideoEmbedCard: React.FC<VideoEmbedCardProps> = ({ exp, defaultOpen = true }) => {
   const [expanded, setExpanded] = useState(defaultOpen);
+  const [playerMode, setPlayerMode] = useState<'native' | 'drive'>('native');
+  const [nativeFailed, setNativeFailed] = useState(false);
+
+  // Reset fallback when switching experiments
+  useEffect(() => {
+    setNativeFailed(false);
+    setPlayerMode('native');
+  }, [exp.id]);
+
+  const base = (import.meta as any).env?.BASE_URL || '/';
+  const normalizedBase = base.endsWith('/') ? base : `${base}/`;
+  const isDev = Boolean((import.meta as any).env?.DEV);
+  const nativeVideoSrc = isDev
+    ? `${normalizedBase}api/video/${exp.videoDriveId}`
+    : `${normalizedBase}videos/${exp.id}.mp4`;
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
@@ -146,7 +161,21 @@ export const VideoEmbedCard: React.FC<VideoEmbedCardProps> = ({ exp, defaultOpen
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5">
+          {expanded && (
+            <button
+              type="button"
+              onClick={() => {
+                setNativeFailed(false);
+                setPlayerMode(playerMode === 'native' ? 'drive' : 'native');
+              }}
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 text-[11px] font-bold text-slate-700 dark:text-slate-200 transition cursor-pointer"
+              title="التبديل بين المشغل المباشر ومضمّن Google Drive"
+            >
+              <span>{playerMode === 'native' ? 'مشغل Drive البديل' : 'المشغل المباشر'}</span>
+            </button>
+          )}
+
           <a
             href={exp.videoUrl}
             target="_blank"
@@ -179,17 +208,48 @@ export const VideoEmbedCard: React.FC<VideoEmbedCardProps> = ({ exp, defaultOpen
 
       {expanded && (
         <div className="p-3 sm:p-4 bg-slate-950">
-          <div className="relative w-full aspect-video max-w-4xl mx-auto rounded-xl overflow-hidden bg-slate-900 border border-slate-800 shadow-inner">
-            <iframe
-              key={exp.videoDriveId}
-              src={exp.videoEmbedUrl}
-              title={`فيديو شرح تجربة ${exp.title}`}
-              className="w-full h-full border-0"
-              allow="autoplay; fullscreen"
-              allowFullScreen
-              loading="lazy"
-            />
+          <div className="relative w-full aspect-video max-w-4xl mx-auto rounded-xl overflow-hidden bg-slate-900 border border-slate-800 shadow-inner flex items-center justify-center">
+            {playerMode === 'native' && !nativeFailed ? (
+              <video
+                key={nativeVideoSrc}
+                src={nativeVideoSrc}
+                controls
+                playsInline
+                preload="metadata"
+                className="w-full h-full bg-black"
+                onError={() => {
+                  setNativeFailed(true);
+                  setPlayerMode('drive');
+                }}
+              >
+                متصفحك لا يدعم تشغيل الفيديو المباشر.
+              </video>
+            ) : (
+              <iframe
+                key={exp.videoDriveId}
+                src={exp.videoEmbedUrl}
+                title={`فيديو شرح تجربة ${exp.title}`}
+                className="w-full h-full border-0"
+                allow="autoplay; fullscreen"
+                allowFullScreen
+                loading="lazy"
+              />
+            )}
           </div>
+          {playerMode === 'drive' && (
+            <div className="mt-2 text-center text-[11px] text-slate-400">
+              في حال منع المتصفح ملفات تعريف الارتباط للطرف الثالث (مثل Firefox أو التصفح الخفي)، اضغط على{' '}
+              <a
+                href={exp.videoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-amber-300 underline font-bold"
+              >
+                فتح في Drive
+              </a>{' '}
+              أو أوقف حظر التتبع لهذا الموقع.
+            </div>
+          )}
         </div>
       )}
     </div>
