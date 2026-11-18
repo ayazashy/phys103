@@ -1,83 +1,102 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>مراجعة التجارب العملية — مقرر 103 فيز | جامعة الملك سعود</title>
 
-    <!-- Google Font: Tajawal -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap"
-      rel="stylesheet"
-    />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>مراجعة التجارب العملية - مقرر 103 فيز | جامعة الملك سعود</title>
 
-    <!-- KaTeX CSS for LaTeX rendering -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
-    />
+  <!-- Google Font: Tajawal -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap"
+    rel="stylesheet" />
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Tajawal', 'sans-serif'],
-              tajawal: ['Tajawal', 'sans-serif']
-            }
+  <!-- KaTeX CSS for LaTeX rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+
+  <!-- Tailwind CSS CDN -->
+  <script>
+    try {
+      if (JSON.parse(localStorage.getItem('phys103_dark_mode_v1') || 'false') === true) {
+        document.documentElement.classList.add('dark');
+      }
+    } catch (e) {}
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Tajawal', 'sans-serif'],
+            tajawal: ['Tajawal', 'sans-serif']
           }
         }
       }
-    </script>
+    }
+  </script>
 
-    <style>
-      :root, html, body {
-        font-family: 'Tajawal', sans-serif !important;
-        overflow-x: clip;
-        max-width: 100%;
+  <style>
+    :root,
+    html,
+    body {
+      font-family: 'Tajawal', sans-serif !important;
+      overflow-x: clip;
+      max-width: 100%;
+    }
+
+    video,
+    iframe {
+      max-width: 100%;
+    }
+
+    .katex {
+      color: inherit !important;
+    }
+
+    .katex,
+    .katex * {
+      font-family: KaTeX_Main, KaTeX_Math, KaTeX_AMS, 'Times New Roman', serif !important;
+      color: inherit !important;
+    }
+
+    .katex-display {
+      margin: 0.35rem 0 !important;
+      max-width: 100%;
+      overflow-x: auto !important;
+      overflow-y: visible !important;
+      padding: 0.25rem 0 !important;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    @media print {
+
+      header,
+      .no-print {
+        display: none !important;
       }
-      video, iframe {
-        max-width: 100%;
+
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
       }
-      .katex {
-        color: inherit !important;
-      }
-      .katex, .katex * {
-        font-family: KaTeX_Main, KaTeX_Math, KaTeX_AMS, 'Times New Roman', serif !important;
-        color: inherit !important;
-      }
-      .katex-display {
-        margin: 0.35rem 0 !important;
-        max-width: 100%;
-        overflow-x: auto !important;
-        overflow-y: visible !important;
-        padding: 0.25rem 0 !important;
-      }
-      .no-scrollbar::-webkit-scrollbar {
-        display: none;
-      }
-      .no-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-      }
-      @media print {
-        header, .no-print {
-          display: none !important;
-        }
-        body {
-          background: #ffffff !important;
-          color: #000000 !important;
-        }
-      }
-    </style>
-  </head>
-  <body class="bg-slate-50 dark:bg-slate-950 min-h-screen text-slate-900 dark:text-slate-100 font-sans">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+    }
+  </style>
+</head>
+
+<body class="bg-slate-50 dark:bg-slate-950 min-h-screen text-slate-900 dark:text-slate-100 font-sans">
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>

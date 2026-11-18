@@ -68,25 +68,94 @@ const KIND_LABELS: Record<Experiment['kind'], string> = {
   calorimetry: 'توازن وحفظ طاقة'
 };
 
+const STORAGE_KEYS = {
+  mastery: 'phys103_mastery_v1',
+  selectedExp: 'phys103_selected_exp_v1',
+  activeTab: 'phys103_active_tab_v1',
+  darkMode: 'phys103_dark_mode_v1',
+  hideAnswers: 'phys103_hide_answers_v1',
+  tableDrafts: 'phys103_table_drafts_v1'
+} as const;
+
+interface TableDraft {
+  selections: Record<string, string>;
+  calcInput: string;
+}
+
+function readStorage<T>(key: string, fallback: T): T {
+  if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') {
+    return fallback;
+  }
+  try {
+    const raw = window.localStorage.getItem(key);
+    if (raw === null) return fallback;
+    return JSON.parse(raw) as T;
+  } catch {
+    return fallback;
+  }
+}
+
+function writeStorage<T>(key: string, value: T): void {
+  if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') {
+    return;
+  }
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Ignore storage quota or strict privacy mode failures
+  }
+}
+
+function loadInitialMastery(): Record<string, MasteryEntry> {
+  const saved = readStorage<Record<string, Partial<MasteryEntry>>>(STORAGE_KEYS.mastery, {});
+  const initial: Record<string, MasteryEntry> = {};
+  EXPERIMENTS.forEach((e) => {
+    const entry = saved && typeof saved === 'object' ? saved[e.id] : undefined;
+    initial[e.id] = {
+      theory: Boolean(entry?.theory),
+      table: Boolean(entry?.table),
+      exam: Boolean(entry?.exam),
+      score: typeof entry?.score === 'number' && !isNaN(entry.score) ? entry.score : 0
+    };
+  });
+  return initial;
+}
+
+const VALID_TABS: TabId[] = ['study', 'tableTrainer', 'examSim', 'cheatSheet'];
+
 export default function App() {
-  const [activeTab, setActiveTab] = useState<TabId>('study');
-  const [selectedExpId, setSelectedExpId] = useState<string>('hooke');
+  const [activeTab, setActiveTab] = useState<TabId>(() => {
+    const saved = readStorage<string>(STORAGE_KEYS.activeTab, 'study');
+    return VALID_TABS.includes(saved as TabId) ? (saved as TabId) : 'study';
+  });
+  const [selectedExpId, setSelectedExpId] = useState<string>(() => {
+    const saved = readStorage<string>(STORAGE_KEYS.selectedExp, 'hooke');
+    return EXPERIMENTS.some((e) => e.id === saved) ? saved : 'hooke';
+  });
   const [showAllGrid, setShowAllGrid] = useState<boolean>(false);
 
-  // Track tab changes invisibly
+  // Persist tab & experiment selection + track tab changes invisibly
   useEffect(() => {
+    writeStorage(STORAGE_KEYS.activeTab, activeTab);
     trackTab(activeTab);
   }, [activeTab]);
 
-  // Dark Mode State
+  useEffect(() => {
+    writeStorage(STORAGE_KEYS.selectedExp, selectedExpId);
+  }, [selectedExpId]);
+
+  // Dark Mode State (persisted in localStorage)
   const [darkMode, setDarkMode] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
+    const saved = readStorage<boolean | null>(STORAGE_KEYS.darkMode, null);
+    if (typeof saved === 'boolean') return saved;
+    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       return document.documentElement.classList.contains('dark');
     }
     return false;
   });
 
   useEffect(() => {
+    writeStorage(STORAGE_KEYS.darkMode, darkMode);
     if (darkMode) {
       document.documentElement.classList.add('dark');
     } else {
@@ -96,31 +165,76 @@ export default function App() {
 
   const toggleDarkMode = () => setDarkMode((prev) => !prev);
 
-  // Mastery tracking per experiment
-  const [mastery, setMastery] = useState<Record<string, MasteryEntry>>(() => {
-    const initial: Record<string, MasteryEntry> = {};
-    EXPERIMENTS.forEach((e) => {
-      initial[e.id] = { theory: false, table: false, exam: false, score: 0 };
-    });
-    return initial;
-  });
+  // Mastery tracking per experiment (persisted in localStorage)
+  const [mastery, setMastery] = useState<Record<string, MasteryEntry>>(() => loadInitialMastery());
+
+  useEffect(() => {
+    writeStorage(STORAGE_KEYS.mastery, mastery);
+  }, [mastery]);
 
   // Study Mode State
-  const [hideAnswersInStudy, setHideAnswersInStudy] = useState<boolean>(false);
+  const [hideAnswersInStudy, setHideAnswersInStudy] = useState<boolean>(() =>
+    Boolean(readStorage<boolean>(STORAGE_KEYS.hideAnswers, false))
+  );
+  useEffect(() => {
+    writeStorage(STORAGE_KEYS.hideAnswers, hideAnswersInStudy);
+  }, [hideAnswersInStudy]);
+
   const [revealedCards, setRevealedCards] = useState<Record<string, boolean>>({});
   const [showTheoryNotes, setShowTheoryNotes] = useState<boolean>(true);
   const [showPracticalSteps, setShowPracticalSteps] = useState<boolean>(false);
   const [showLabGraph, setShowLabGraph] = useState<boolean>(true);
 
-  // Table Trainer State
-  const [tableSelections, setTableSelections] = useState<Record<string, string>>({});
-  const [calcInput, setCalcInput] = useState<string>('');
+  // Table Trainer State (persisted per experiment in localStorage)
+  const [tableDrafts, setTableDrafts] = useState<Record<string, TableDraft>>(() => {
+    const saved = readStorage<Record<string, TableDraft>>(STORAGE_KEYS.tableDrafts, {});
+    return saved && typeof saved === 'object' ? saved : {};
+  });
+  useEffect(() => {
+    writeStorage(STORAGE_KEYS.tableDrafts, tableDrafts);
+  }, [tableDrafts]);
+
+  const currentDraft = tableDrafts[selectedExpId] || { selections: {}, calcInput: '' };
+  const tableSelections = currentDraft.selections || {};
+  const calcInput = currentDraft.calcInput || '';
+
+  const setTableSelections = (nextSelections: Record<string, string>) => {
+    setTableDrafts((prev) => {
+      const next = {
+        ...prev,
+        [selectedExpId]: {
+          selections: nextSelections,
+          calcInput: prev[selectedExpId]?.calcInput || ''
+        }
+      };
+      writeStorage(STORAGE_KEYS.tableDrafts, next);
+      return next;
+    });
+  };
+
+  const setCalcInput = (nextCalcInput: string) => {
+    setTableDrafts((prev) => {
+      const next = {
+        ...prev,
+        [selectedExpId]: {
+          selections: prev[selectedExpId]?.selections || {},
+          calcInput: nextCalcInput
+        }
+      };
+      writeStorage(STORAGE_KEYS.tableDrafts, next);
+      return next;
+    });
+  };
+
   const [tableFeedback, setTableFeedback] = useState<TableFeedback | null>(null);
 
   // Exam Simulator State
-  const [examExp, setExamExp] = useState<Experiment>(EXPERIMENTS[0]);
+  const [examExp, setExamExp] = useState<Experiment>(
+    () => EXPERIMENTS.find((e) => e.id === selectedExpId) || EXPERIMENTS[0]
+  );
   const [examStarted, setExamStarted] = useState<boolean>(true);
   const [examSubmitted, setExamSubmitted] = useState<boolean>(false);
+  const [examSaved, setExamSaved] = useState<boolean>(false);
   const [isDrawingRandom, setIsDrawingRandom] = useState<boolean>(false);
 
   const [examAnswers, setExamAnswers] = useState<ExamAnswers>({
@@ -170,20 +284,37 @@ export default function App() {
   }, [mastery]);
 
   const markPillarDone = (expId: string, pillar: keyof Omit<MasteryEntry, 'score'>, scoreVal: number | null = null) => {
-    setMastery((prev) => ({
-      ...prev,
-      [expId]: {
-        ...prev[expId],
-        [pillar]: true,
-        score: scoreVal !== null ? Math.max(prev[expId].score, scoreVal) : prev[expId].score
-      }
-    }));
+    setMastery((prev) => {
+      const next = {
+        ...prev,
+        [expId]: {
+          ...prev[expId],
+          [pillar]: true,
+          score: scoreVal !== null ? Math.max(prev[expId]?.score ?? 0, scoreVal) : (prev[expId]?.score ?? 0)
+        }
+      };
+      writeStorage(STORAGE_KEYS.mastery, next);
+      return next;
+    });
   };
 
-  // Reset per-experiment UI state & log view
+  const toggleTheoryDone = (expId: string) => {
+    setMastery((prev) => {
+      const current = prev[expId] || { theory: false, table: false, exam: false, score: 0 };
+      const next = {
+        ...prev,
+        [expId]: {
+          ...current,
+          theory: !current.theory
+        }
+      };
+      writeStorage(STORAGE_KEYS.mastery, next);
+      return next;
+    });
+  };
+
+  // Reset transient per-experiment feedback & log view
   useEffect(() => {
-    setTableSelections({});
-    setCalcInput('');
     setTableFeedback(null);
     setRevealedCards({});
     setShowPracticalSteps(false);
@@ -192,6 +323,7 @@ export default function App() {
 
   const resetExamAnswers = () => {
     setExamSubmitted(false);
+    setExamSaved(false);
     setExamAnswers({
       q1GoalChoice: '',
       q2FormulaChoice: '',
@@ -517,7 +649,7 @@ export default function App() {
   return (
     <div
       dir="rtl"
-      className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-['Tajawal',sans-serif] selection:bg-indigo-500 selection:text-white pb-20 transition-colors"
+      className="min-h-screen w-full max-w-full overflow-x-clip bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-['Tajawal',sans-serif] selection:bg-indigo-500 selection:text-white pb-20 transition-colors"
     >
       {/* HEADER */}
       <header className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-sm transition-colors">
@@ -624,7 +756,7 @@ export default function App() {
                 <span>الفهرس (10)</span>
               </button>
 
-              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth py-0.5 flex-1">
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth py-0.5 flex-1 min-w-0">
                 {EXPERIMENTS.map((exp) => {
                   const isSelected = exp.id === (activeTab === 'examSim' && examStarted ? examExp.id : selectedExpId);
                   const m = mastery[exp.id];
@@ -715,7 +847,7 @@ export default function App() {
       )}
 
       {/* MAIN CONTENT */}
-      <main className="w-full max-w-6xl mx-auto px-3 sm:px-6 pt-4 sm:pt-6 overflow-x-hidden">
+      <main className="w-full max-w-6xl mx-auto px-3 sm:px-6 pt-4 sm:pt-6 overflow-x-clip min-w-0">
         {/* ==========================================
             TAB 1: PRACTICAL LAB REVIEW (ALL 10 EXPERIMENTS)
            ========================================== */}
@@ -763,7 +895,9 @@ export default function App() {
 
                 <button
                   type="button"
-                  onClick={() => markPillarDone(currentExp.id, 'theory')}
+                  onClick={() => toggleTheoryDone(currentExp.id)}
+                  aria-pressed={Boolean(mastery[currentExp.id]?.theory)}
+                  title="توثيق أو إلغاء توثيق مراجعة هذه التجربة (محفوظ تلقائياً في المتصفح)"
                   className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${mastery[currentExp.id]?.theory
                       ? 'bg-emerald-600 text-white shadow-sm'
                       : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm'
@@ -1219,10 +1353,10 @@ export default function App() {
             TAB 2: TABLE & CALCULATION TRAINER
            ========================================== */}
         {activeTab === 'tableTrainer' && (
-          <div className="space-y-4">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200 dark:border-slate-800">
-                <div>
+          <div className="space-y-4 w-full min-w-0">
+            <div className="w-full max-w-full min-w-0 overflow-hidden bg-white dark:bg-slate-900 rounded-2xl p-3.5 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 pb-3 border-b border-slate-200 dark:border-slate-800 min-w-0">
+                <div className="min-w-0 flex-1">
                   <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
                     التدريب التفاعلي على الجداول والوحدات
                   </span>
@@ -1233,12 +1367,12 @@ export default function App() {
                     حدد العنوان والوحدة الصحيحة لكل عمود، ثم أدخل الناتج العددي في فقرة التطبيق الحسابي أدناه:
                   </p>
                 </div>
-                <div className="text-xs bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg self-start sm:self-auto" dir="ltr">
+                <div className="max-w-full overflow-x-auto text-xs bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg self-start md:self-auto" dir="ltr">
                   <Latex math={currentExp.givensOnExamLatex || currentExp.givensOnExam} />
                 </div>
               </div>
 
-              <div className="w-full overflow-x-auto">
+              <div className="w-full max-w-full overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800" dir="ltr">
                 <table className="w-full text-xs sm:text-sm border-collapse text-center" dir="ltr">
                   <thead>
                     <tr>
@@ -1312,7 +1446,7 @@ export default function App() {
                 </table>
               </div>
 
-              <div className="p-4 rounded-xl bg-indigo-50/70 dark:bg-slate-800/60 border border-indigo-200 dark:border-slate-700 space-y-3">
+              <div className="min-w-0 max-w-full overflow-hidden p-4 rounded-xl bg-indigo-50/70 dark:bg-slate-800/60 border border-indigo-200 dark:border-slate-700 space-y-3">
                 <div className="flex items-center gap-2 text-indigo-900 dark:text-indigo-300 font-extrabold text-xs sm:text-sm">
                   <Calculator className="w-4 h-4" />
                   <span>التطبيق الحسابي على بيانات التجربة:</span>
@@ -1498,16 +1632,16 @@ export default function App() {
                     <label className="block font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white">
                       (2) اختر القانون الرئيسي للتجربة ووحدة الرمز الأساسي:
                     </label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 min-w-0">
+                      <div className="min-w-0">
                         <div className="text-[11px] font-bold text-slate-500 mb-1">أ) الصيغة الرياضية:</div>
-                        <div className="space-y-2">
+                        <div className="space-y-2 min-w-0">
                           {examOptions.formulas.map((f, i) => (
                             <button
                               key={i}
                               type="button"
                               onClick={() => setExamAnswers({ ...examAnswers, q2FormulaChoice: f })}
-                              className={`w-full p-2.5 rounded-lg border text-xs text-center transition cursor-pointer min-h-[44px] flex items-center justify-center ${examAnswers.q2FormulaChoice === f
+                              className={`w-full max-w-full overflow-x-auto p-2.5 rounded-lg border text-xs text-center transition cursor-pointer min-h-[44px] flex items-center justify-center ${examAnswers.q2FormulaChoice === f
                                   ? 'bg-indigo-600 text-white border-indigo-600 font-bold shadow-sm'
                                   : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-indigo-400'
                                 }`}
@@ -1519,7 +1653,7 @@ export default function App() {
                         </div>
                       </div>
 
-                      <div>
+                      <div className="min-w-0">
                         <div className="text-[11px] font-bold text-slate-500 mb-1">
                           ب) الوحدة للرمز (<Latex math={examOptions.targetSym?.symLatex || examOptions.targetSym?.sym} /> : {examOptions.targetSym?.name}):
                         </div>
@@ -1544,18 +1678,18 @@ export default function App() {
                   </div>
 
                   {/* Q3 */}
-                  <div className="space-y-3 pt-4 border-t border-slate-200 dark:border-slate-800">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                  <div className="space-y-3 pt-4 border-t border-slate-200 dark:border-slate-800 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 min-w-0">
                       <label className="block font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white">
                         (3) استكمال جدول التجربة والعمليات الحسابية:
                       </label>
-                      <span className="text-[11px] bg-amber-100 dark:bg-amber-950/70 text-amber-900 dark:text-amber-300 px-2 py-0.5 rounded self-start sm:self-auto" dir="ltr">
+                      <span className="max-w-full overflow-x-auto text-[11px] bg-amber-100 dark:bg-amber-950/70 text-amber-900 dark:text-amber-300 px-2 py-0.5 rounded self-start sm:self-auto" dir="ltr">
                         <Latex math={examExp.givensOnExamLatex || examExp.givensOnExam} />
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-800/50 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700">
-                      <div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-800/50 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 min-w-0">
+                      <div className="min-w-0">
                         <div className="text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-2">
                           أ) اختر عنوان العمود/الوحدة الصحيح ({examExp.tableConfig.missingColumns[0].labelAr}):
                         </div>
@@ -1793,6 +1927,7 @@ export default function App() {
                       type="button"
                       onClick={() => {
                         setExamSubmitted(true);
+                        setExamSaved(false);
                         setTimeout(() => {
                           const el = document.getElementById('exam-grading-report');
                           if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -1831,11 +1966,14 @@ export default function App() {
                               markPillarDone(examExp.id, 'theory');
                               markPillarDone(examExp.id, 'table');
                             }
+                            setExamSaved(true);
                           }}
-                          className="px-3.5 py-2 rounded-lg bg-emerald-600 text-white font-bold text-xs shadow cursor-pointer inline-flex items-center gap-1"
+                          className={`px-3.5 py-2 rounded-lg text-white font-bold text-xs shadow cursor-pointer inline-flex items-center gap-1 transition ${
+                            examSaved ? 'bg-emerald-700 ring-2 ring-emerald-400' : 'bg-emerald-600 hover:bg-emerald-500'
+                          }`}
                         >
                           <Check className="w-3.5 h-3.5" />
-                          <span>حفظ النتيجة</span>
+                          <span>{examSaved ? 'تم حفظ النتيجة' : 'حفظ النتيجة'}</span>
                         </button>
                         <button
                           type="button"
@@ -1899,8 +2037,8 @@ export default function App() {
             TAB 4: ALL 10 EXPERIMENTS SUMMARY MATRIX
            ========================================== */}
         {activeTab === 'cheatSheet' && (
-          <div className="space-y-4">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div className="space-y-4 w-full min-w-0">
+            <div className="w-full max-w-full min-w-0 overflow-hidden bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                   <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
@@ -1922,7 +2060,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="w-full overflow-x-auto">
+              <div className="w-full max-w-full overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
                 <table className="w-full text-xs border-collapse text-right">
                   <thead>
                     <tr className="bg-slate-900 text-white dark:bg-slate-800">
