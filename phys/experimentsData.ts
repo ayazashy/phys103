@@ -1,5 +1,17 @@
 export type ExperimentKind = 'linear' | 'vector' | 'calorimetry';
 
+export type ExperimentIconKey =
+  | 'spring'
+  | 'gauge'
+  | 'freefall'
+  | 'fluid'
+  | 'vector'
+  | 'ruler'
+  | 'airtrack'
+  | 'flame'
+  | 'zap'
+  | 'sound';
+
 export interface ExperimentSymbol {
   sym: string;
   symLatex: string;
@@ -31,7 +43,7 @@ export interface Experiment {
   title: string;
   shortTitle: string;
   badge: string;
-  icon: string;
+  icon: ExperimentIconKey;
   videoDriveId: string;
   videoUrl: string;
   videoEmbedUrl: string;
@@ -117,7 +129,7 @@ export const EXPERIMENTS: Experiment[] = [
     title: "قانون هوك (Hooke's Law)",
     shortTitle: 'قانون هوك',
     badge: 'المرونة والنابض',
-    icon: '🌀',
+    icon: 'spring',
     ...makeDriveVideo('1GJcBNXuujBmKUGnc9jEQp-VXVfN1eOGy'),
     goal: 'تحقيق قانون هوك وإيجاد ثابت النابض ($k$).',
     goalKeywords: ['قانون هوك', 'ثابت النابض'],
@@ -217,7 +229,7 @@ export const EXPERIMENTS: Experiment[] = [
     title: "قانون بويل (Boyle's Law)",
     shortTitle: 'قانون بويل',
     badge: 'الغازات والضغط الجوي',
-    icon: '🌡️',
+    icon: 'gauge',
     ...makeDriveVideo('1NaIgDhlKJnsJPKGqKRCU91wyzKHMoI6q'),
     goal: '1) تحقيق قانون بويل للغازات. 2) قياس الضغط الجوي في المختبر ($P_0$).',
     goalKeywords: ['قانون بويل', 'الضغط الجوي'],
@@ -327,7 +339,7 @@ export const EXPERIMENTS: Experiment[] = [
     title: 'السقوط الحر (Free Fall)',
     shortTitle: 'السقوط الحر',
     badge: 'تسارع الجاذبية g',
-    icon: '🍎',
+    icon: 'freefall',
     ...makeDriveVideo('1PcPuK2JBuNswXKjhOOWs9uVAyT1Q1Fb1'),
     goal: 'إيجاد تسارع الجاذبية الأرضية ($g$) بطريقة السقوط الحر.',
     goalKeywords: ['تسارع الجاذبية', 'السقوط الحر'],
@@ -427,7 +439,7 @@ export const EXPERIMENTS: Experiment[] = [
     title: 'معامل اللزوجة - ستوكس (Viscosity)',
     shortTitle: 'معامل اللزوجة',
     badge: 'قانون ستوكس',
-    icon: '💧',
+    icon: 'fluid',
     ...makeDriveVideo('1uYCq4NODZgiwZwyQFENdYhLFjKPzVyUx'),
     goal: 'إيجاد قيمة معامل اللزوجة ($\\eta$) لسائل شفاف لزج بطريقة ستوكس.',
     goalKeywords: ['معامل اللزوجة', 'ستوكس'],
@@ -537,7 +549,7 @@ export const EXPERIMENTS: Experiment[] = [
     title: 'طاولة القوى (Force Table)',
     shortTitle: 'طاولة القوى',
     badge: 'تحليل المتجهات',
-    icon: '🧭',
+    icon: 'vector',
     ...makeDriveVideo('1muNa4ov8Ck-yXV9al2KvV9nTVaxlWH29'),
     goal: 'تعيين محصلة قوتين مقداراً واتجاهاً بثلاث طرق: عملية، وبيانية، وتحليلية.',
     goalKeywords: ['محصلة قوتين', 'مقداراً واتجاهاً', 'ثلاث طرق'],
@@ -650,7 +662,7 @@ export const EXPERIMENTS: Experiment[] = [
     title: "معامل يونج (Young's Modulus)",
     shortTitle: 'معامل يونج',
     badge: 'طريقة سريل',
-    icon: '📏',
+    icon: 'ruler',
     ...makeDriveVideo('1pJQ5zLwImNckrozKW5Ad0uWTZA9mkZsL'),
     goal: 'تعيين معامل يونج ($Y$) لسلك معدني بطريقة سريل.',
     goalKeywords: ['معامل يونج', 'سلك معدني', 'سريل'],
@@ -752,7 +764,7 @@ export const EXPERIMENTS: Experiment[] = [
     title: 'العربة الهوائية (Air Track)',
     shortTitle: 'العربة الهوائية',
     badge: 'مردود الطاقة',
-    icon: '🚀',
+    icon: 'airtrack',
     ...makeDriveVideo('13tm0T5POl2eoLT-z2m66z3kxfJIM2iAB'),
     goal: '1) إيجاد مردود الطاقة من خلال تحويل الشغل المبذول بفعل الجاذبية إلى طاقة حركية. 2) إيجاد النسبة المئوية للطاقة المفقودة.',
     goalKeywords: ['مردود الطاقة', 'الشغل المبذول', 'الطاقة المفقودة'],
@@ -871,7 +883,7 @@ export const EXPERIMENTS: Experiment[] = [
     title: 'الحرارة النوعية (Specific Heat)',
     shortTitle: 'الحرارة النوعية',
     badge: 'التوازن الحراري',
-    icon: '🔥',
+    icon: 'flame',
     ...makeDriveVideo('1RtuDZgdGOQBagU5YB6JxraWyohhQQRo4'),
     goal: 'إيجاد الحرارة النوعية ($C_b$) لكرة صلبة باستخدام المسعر الحراري.',
     goalKeywords: ['الحرارة النوعية', 'كرة صلبة', 'المسعر'],
@@ -982,7 +994,7 @@ export const EXPERIMENTS: Experiment[] = [
     title: 'مكافئ جول (Joule’s Equivalent)',
     shortTitle: 'مكافئ جول',
     badge: 'حفظ الطاقة الحرارية',
-    icon: '⚡',
+    icon: 'zap',
     ...makeDriveVideo('1sNF2JUqokEgXeXPCWRF0U23WOmhhEruc'),
     goal: 'تعيين قيمة مكافئ جول ($J$) باستخدام مبدأ حفظ الطاقة.',
     goalKeywords: ['مكافئ جول', 'حفظ الطاقة'],
@@ -1094,7 +1106,7 @@ export const EXPERIMENTS: Experiment[] = [
     title: 'سرعة الصوت في الهواء (Speed of Sound)',
     shortTitle: 'سرعة الصوت',
     badge: 'الرنين في الأعمدة المغلقة',
-    icon: '🔊',
+    icon: 'sound',
     ...makeDriveVideo('1pxSKznbGZ1S8kna0SbCCMu-kTqMnhLb0'),
     goal: '1) دراسة ظاهرة الرنين في الأعمدة الهوائية المغلقة. 2) إيجاد سرعة الصوت في الهواء عند درجة حرارة المعمل. 3) معرفة العلاقة بين سرعة الصوت ودرجة حرارة المعمل.',
     goalKeywords: ['ظاهرة الرنين', 'سرعة الصوت', 'درجة حرارة المعمل'],

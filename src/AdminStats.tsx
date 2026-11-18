@@ -15,7 +15,10 @@ import {
   Radio,
   Search,
   Eye,
-  Cookie
+  Cookie,
+  Lock,
+  ChevronUp,
+  ChevronDown
 } from 'lucide-react';
 import { getAllAnalyticsCookies } from './telemetry';
 
@@ -276,8 +279,8 @@ export default function AdminStats() {
         {/* TOP BAR */}
         <header className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-2xl shadow-inner shrink-0">
-              🔒
+            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center shadow-inner shrink-0">
+              <Lock className="w-5 h-5 text-indigo-400" />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -618,8 +621,18 @@ export default function AdminStats() {
                 {Object.keys(currentCookies).length} كوكيز نشطة
               </span>
             </div>
-            <span className="text-xs text-indigo-400 font-bold">
-              {showCookies ? '▲ إخفاء الكوكيز' : '▼ إظهار محتوى الكوكيز'}
+            <span className="inline-flex items-center gap-1 text-xs text-indigo-400 font-bold">
+              {showCookies ? (
+                <>
+                  <ChevronUp className="w-3.5 h-3.5" />
+                  <span>إخفاء الكوكيز</span>
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="w-3.5 h-3.5" />
+                  <span>إظهار محتوى الكوكيز</span>
+                </>
+              )}
             </span>
           </button>
 

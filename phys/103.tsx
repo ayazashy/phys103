@@ -23,10 +23,12 @@ import {
   Video,
   GraduationCap,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Check,
+  X
 } from 'lucide-react';
 import { EXPERIMENTS, Experiment, toLatexLabel } from './experimentsData';
-import { Latex, MathText, VideoEmbedCard, LabGraphSVG } from './LabVisuals';
+import { Latex, MathText, VideoEmbedCard, LabGraphSVG, ExperimentIcon } from './LabVisuals';
 import { trackExperiment, trackExamResult, trackTab } from '../src/telemetry';
 
 type TabId = 'study' | 'tableTrainer' | 'examSim' | 'cheatSheet';
@@ -646,7 +648,7 @@ export default function App() {
                           : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-slate-600'
                       }`}
                     >
-                      <span>{exp.icon}</span>
+                      <ExperimentIcon icon={exp.icon} className="w-3.5 h-3.5 shrink-0" />
                       <span>
                         {exp.number}. {exp.shortTitle}
                       </span>
@@ -675,14 +677,16 @@ export default function App() {
                           startExamSimulation('selected', exp);
                         }
                       }}
-                      className={`p-3 rounded-xl border text-right transition cursor-pointer flex flex-col justify-between gap-2 ${
+                      className={`p-3 rounded-xl border text-right transition cursor-pointer flex flex-col justify-between gap-2 min-w-0 ${
                         isSelected
                           ? 'bg-indigo-50 dark:bg-indigo-950/50 border-indigo-500 ring-1 ring-indigo-500'
                           : 'bg-slate-50/70 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 hover:border-indigo-400'
                       }`}
                     >
                       <div className="flex items-center justify-between w-full">
-                        <span className="text-lg">{exp.icon}</span>
+                        <span className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                          <ExperimentIcon icon={exp.icon} className="w-4 h-4" />
+                        </span>
                         <div className="flex items-center gap-1">
                           <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-200/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold">
                             {KIND_LABELS[exp.kind]}
@@ -715,19 +719,19 @@ export default function App() {
       )}
 
       {/* MAIN CONTENT */}
-      <main className="max-w-6xl mx-auto px-3 sm:px-6 pt-4 sm:pt-6">
+      <main className="w-full max-w-6xl mx-auto px-3 sm:px-6 pt-4 sm:pt-6 overflow-x-hidden">
         {/* ==========================================
             TAB 1: PRACTICAL LAB REVIEW (ALL 10 EXPERIMENTS)
            ========================================== */}
         {activeTab === 'study' && (
-          <div className="space-y-4">
+          <div className="space-y-4 min-w-0">
             {/* Experiment Header Card */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-900 flex items-center justify-center text-2xl shrink-0">
-                  {currentExp.icon}
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 min-w-0">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-900 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                  <ExperimentIcon icon={currentExp.icon} className="w-5 h-5" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-1.5">
                     <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
                       التجربة {currentExp.number} من 10
@@ -739,13 +743,13 @@ export default function App() {
                       {currentExp.badge}
                     </span>
                   </div>
-                  <h2 className="text-base sm:text-xl font-extrabold text-slate-900 dark:text-white mt-1">
+                  <h2 className="text-base sm:text-xl font-extrabold text-slate-900 dark:text-white mt-1 break-words">
                     {currentExp.title}
                   </h2>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 self-stretch sm:self-auto">
+              <div className="flex items-center gap-2 self-stretch sm:self-auto shrink-0">
                 <button
                   type="button"
                   onClick={() => {
@@ -772,7 +776,7 @@ export default function App() {
                   }`}
                 >
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>{mastery[currentExp.id]?.theory ? 'تمت المراجعة ✓' : 'توثيق المراجعة'}</span>
+                  <span>{mastery[currentExp.id]?.theory ? 'تمت المراجعة' : 'توثيق المراجعة'}</span>
                 </button>
               </div>
             </div>
@@ -783,7 +787,7 @@ export default function App() {
             {/* Goal + Theory & Equations */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* Goal & Theory Notes */}
-              <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+              <div className="min-w-0 bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="px-2.5 py-0.5 rounded-md bg-indigo-600 text-white text-xs font-bold">
@@ -799,12 +803,13 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => setRevealedCards({ ...revealedCards, q1: true })}
-                    className="w-full py-6 rounded-xl border-2 border-dashed border-indigo-300 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 font-bold text-xs sm:text-sm hover:bg-indigo-50/50 transition cursor-pointer"
+                    className="w-full py-6 px-3 rounded-xl border-2 border-dashed border-indigo-300 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 font-bold text-xs sm:text-sm hover:bg-indigo-50/50 transition cursor-pointer flex items-center justify-center gap-2"
                   >
-                    اضغط هنا لكشف الهدف والملخص النظري 👁️
+                    <Eye className="w-4 h-4 shrink-0" />
+                    <span>اضغط هنا لكشف الهدف والملخص النظري</span>
                   </button>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-3 min-w-0">
                     <div className="p-3.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900">
                       <div className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 mb-0.5">الغرض / الهدف الرسمي:</div>
                       <p className="text-sm sm:text-base font-extrabold text-indigo-950 dark:text-indigo-100 leading-relaxed">
@@ -820,18 +825,18 @@ export default function App() {
                         className="w-full flex items-center justify-between px-3 py-2 bg-slate-50 dark:bg-slate-800/60 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer"
                       >
                         <span>المفاهيم النظرية الأساسية (من مذكرة التجارب)</span>
-                        {showTheoryNotes ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                        {showTheoryNotes ? <ChevronUp className="w-3.5 h-3.5 shrink-0" /> : <ChevronDown className="w-3.5 h-3.5 shrink-0" />}
                       </button>
                       {showTheoryNotes && (
                         <div className="p-3 space-y-2.5 text-xs">
                           {currentExp.theorySummary.map((note, idx) => (
-                            <div key={idx} className="space-y-1">
+                            <div key={idx} className="space-y-1 min-w-0">
                               <div className="font-extrabold text-slate-900 dark:text-slate-100">{note.title}</div>
                               <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
                                 <MathText text={note.body} />
                               </p>
                               {note.formulaLatex && (
-                                <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800/90 text-indigo-700 dark:text-indigo-300">
+                                <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800/90 text-indigo-700 dark:text-indigo-300 overflow-x-auto">
                                   <Latex math={note.formulaLatex} block={true} />
                                 </div>
                               )}
@@ -851,10 +856,22 @@ export default function App() {
                     className="flex items-center justify-between w-full text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-indigo-600 py-1 cursor-pointer"
                   >
                     <span className="flex items-center gap-1.5">
-                      <Play className="w-3.5 h-3.5 text-emerald-500" />
+                      <Play className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                       <span>خطوات العمل المعملي وأخذ القراءات</span>
                     </span>
-                    <span>{showPracticalSteps ? '▲ إخفاء' : '▼ عرض الخطوات'}</span>
+                    <span className="inline-flex items-center gap-1 shrink-0">
+                      {showPracticalSteps ? (
+                        <>
+                          <ChevronUp className="w-3.5 h-3.5" />
+                          <span>إخفاء</span>
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="w-3.5 h-3.5" />
+                          <span>عرض الخطوات</span>
+                        </>
+                      )}
+                    </span>
                   </button>
                   {showPracticalSteps && (
                     <ol className="mt-2 space-y-1.5 text-xs text-slate-600 dark:text-slate-300 list-decimal list-inside pr-1">
@@ -869,7 +886,7 @@ export default function App() {
               </div>
 
               {/* Law, Symbols & SI Units */}
-              <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+              <div className="min-w-0 bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="px-2.5 py-0.5 rounded-md bg-indigo-600 text-white text-xs font-bold">
@@ -885,20 +902,21 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => setRevealedCards({ ...revealedCards, q2: true })}
-                    className="w-full py-10 rounded-xl border-2 border-dashed border-indigo-300 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 font-bold text-xs sm:text-sm hover:bg-indigo-50/50 transition cursor-pointer"
+                    className="w-full py-10 px-3 rounded-xl border-2 border-dashed border-indigo-300 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 font-bold text-xs sm:text-sm hover:bg-indigo-50/50 transition cursor-pointer flex items-center justify-center gap-2"
                   >
-                    اضغط لكشف القانون الرئيسي والرموز والوحدات 👁️
+                    <Eye className="w-4 h-4 shrink-0" />
+                    <span>اضغط لكشف القانون الرئيسي والرموز والوحدات</span>
                   </button>
                 ) : (
-                  <div className="space-y-3">
-                    <div className="p-3 sm:p-4 rounded-xl bg-slate-900 text-amber-300 dark:bg-slate-950 border border-slate-800 shadow-sm text-center">
+                  <div className="space-y-3 min-w-0">
+                    <div className="p-3 sm:p-4 rounded-xl bg-slate-900 text-amber-300 dark:bg-slate-950 border border-slate-800 shadow-sm text-center overflow-hidden">
                       <div className="text-[11px] text-slate-400 font-bold mb-1">الصيغة الرياضية المعتمدة:</div>
                       <div className="overflow-x-auto overflow-y-visible py-1">
                         <Latex math={currentExp.mainFormulaLatex} block={true} className="text-base sm:text-lg font-bold text-amber-300" />
                       </div>
                     </div>
 
-                    <div className="overflow-x-auto -mx-1 sm:mx-0">
+                    <div className="w-full overflow-x-auto">
                       <table className="w-full text-xs border-collapse">
                         <thead>
                           <tr className="bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300">
@@ -939,7 +957,7 @@ export default function App() {
             </div>
 
             {/* Lab Table & Values */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+            <div className="min-w-0 bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <span className="px-2.5 py-0.5 rounded-md bg-emerald-600 text-white text-xs font-bold">
@@ -949,7 +967,7 @@ export default function App() {
                     جدول القراءات العملية والتحويلات
                   </h3>
                 </div>
-                <div className="text-xs text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg self-start sm:self-auto" dir="ltr">
+                <div className="max-w-full overflow-x-auto text-xs text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg self-start sm:self-auto" dir="ltr">
                   <Latex math={currentExp.givensOnExamLatex || currentExp.givensOnExam} />
                 </div>
               </div>
@@ -958,13 +976,14 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setRevealedCards({ ...revealedCards, q3: true })}
-                  className="w-full py-8 rounded-xl border-2 border-dashed border-emerald-300 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 font-bold text-xs sm:text-sm hover:bg-emerald-50/50 transition cursor-pointer"
+                  className="w-full py-8 px-3 rounded-xl border-2 border-dashed border-emerald-300 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 font-bold text-xs sm:text-sm hover:bg-emerald-50/50 transition cursor-pointer flex items-center justify-center gap-2"
                 >
-                  اضغط لكشف جدول القراءات وأعمدة الحساب 👁️
+                  <Eye className="w-4 h-4 shrink-0" />
+                  <span>اضغط لكشف جدول القراءات وأعمدة الحساب</span>
                 </button>
               ) : (
-                <div className="space-y-3">
-                  <div className="overflow-x-auto -mx-1 sm:mx-0">
+                <div className="space-y-3 min-w-0">
+                  <div className="w-full overflow-x-auto">
                     <table className="w-full text-xs sm:text-sm border-collapse text-center" dir="ltr">
                       <thead>
                         <tr>
@@ -1023,7 +1042,7 @@ export default function App() {
             </div>
 
             {/* Analysis, Graph / Vector / Thermal Balance & Target Calculation */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <div className="min-w-0 bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="px-2.5 py-0.5 rounded-md bg-amber-500 text-slate-950 text-xs font-bold">
@@ -1043,15 +1062,16 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setRevealedCards({ ...revealedCards, q456: true })}
-                  className="w-full py-8 rounded-xl border-2 border-dashed border-amber-300 dark:border-amber-800 text-amber-700 dark:text-amber-400 font-bold text-xs sm:text-sm hover:bg-amber-50/50 transition cursor-pointer"
+                  className="w-full py-8 px-3 rounded-xl border-2 border-dashed border-amber-300 dark:border-amber-800 text-amber-700 dark:text-amber-400 font-bold text-xs sm:text-sm hover:bg-amber-50/50 transition cursor-pointer flex items-center justify-center gap-2"
                 >
-                  اضغط لكشف التحليل الرياضي والميل والنتيجة النهائية 👁️
+                  <Eye className="w-4 h-4 shrink-0" />
+                  <span>اضغط لكشف التحليل الرياضي والميل والنتيجة النهائية</span>
                 </button>
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-                  <div className="lg:col-span-7 space-y-3">
+                  <div className="lg:col-span-7 space-y-3 min-w-0">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
+                      <div className="min-w-0 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
                         <div className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400">
                           {currentExp.kind === 'linear' ? 'محاور الرسم البياني' : currentExp.kind === 'vector' ? 'مرجعية الرسم البياني' : 'المبدأ الفيزيائي'}
                         </div>
@@ -1072,7 +1092,7 @@ export default function App() {
                         </div>
                       </div>
 
-                      <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
+                      <div className="min-w-0 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
                         <div className="text-[11px] font-bold text-rose-600 dark:text-rose-400">
                           {currentExp.kind === 'linear' ? 'الميل (Slope) ووحدته' : currentExp.kind === 'vector' ? 'مقياس المحصلة البياني' : 'الكمية المرحلية'}
                         </div>
@@ -1092,12 +1112,12 @@ export default function App() {
                         </div>
                       </div>
 
-                      <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
+                      <div className="min-w-0 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
                         <div className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
                           حساب {currentExp.graph.targetName}
                         </div>
                         <div className="text-xs text-slate-600 dark:text-slate-300">
-                          <div dir="ltr" className="font-bold text-emerald-700 dark:text-emerald-400 py-0.5">
+                          <div dir="ltr" className="font-bold text-emerald-700 dark:text-emerald-400 py-0.5 overflow-x-auto">
                             <Latex math={currentExp.graph.targetFormulaLatex} />
                           </div>
                         </div>
@@ -1125,7 +1145,7 @@ export default function App() {
                   </div>
 
                   {/* Visualizer Column */}
-                  <div className="lg:col-span-5 space-y-2">
+                  <div className="lg:col-span-5 space-y-2 min-w-0">
                     <div className="flex items-center justify-between lg:hidden">
                       <button
                         type="button"
@@ -1136,7 +1156,19 @@ export default function App() {
                           <TrendingUp className="w-4 h-4 text-amber-500" />
                           <span>{currentExp.kind === 'calorimetry' ? 'مخطط التوازن الحراري' : 'عرض الرسم البياني'}</span>
                         </span>
-                        <span>{showLabGraph ? '▲ إخفاء' : '▼ عرض'}</span>
+                        <span className="inline-flex items-center gap-1">
+                          {showLabGraph ? (
+                            <>
+                              <ChevronUp className="w-3.5 h-3.5" />
+                              <span>إخفاء</span>
+                            </>
+                          ) : (
+                            <>
+                              <ChevronDown className="w-3.5 h-3.5" />
+                              <span>عرض</span>
+                            </>
+                          )}
+                        </span>
                       </button>
                     </div>
                     <div className={`${showLabGraph ? 'block' : 'hidden'} lg:block`}>
@@ -1212,7 +1244,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="overflow-x-auto -mx-1 sm:mx-0">
+              <div className="w-full overflow-x-auto">
                 <table className="w-full text-xs sm:text-sm border-collapse text-center" dir="ltr">
                   <thead>
                     <tr>
@@ -1332,9 +1364,21 @@ export default function App() {
                       ) : (
                         <>
                           <AlertTriangle className="w-4 h-4 text-amber-600" />
-                          <span>
-                            تم اختيار {tableFeedback.correctHeadersCount} من {tableFeedback.totalHeaders} أعمدة صحيحة | الناتج الحسابي:{' '}
-                            {tableFeedback.isCalcCorrect ? 'صحيح ✓' : 'يحتاج مراجعة ✗'}
+                          <span className="inline-flex flex-wrap items-center gap-1.5">
+                            <span>تم اختيار {tableFeedback.correctHeadersCount} من {tableFeedback.totalHeaders} أعمدة صحيحة | الناتج الحسابي:</span>
+                            <span className="inline-flex items-center gap-1">
+                              {tableFeedback.isCalcCorrect ? (
+                                <>
+                                  <span>صحيح</span>
+                                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                </>
+                              ) : (
+                                <>
+                                  <span>يحتاج مراجعة</span>
+                                  <X className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                                </>
+                              )}
+                            </span>
                           </span>
                         </>
                       )}
@@ -1404,7 +1448,9 @@ export default function App() {
 
             {isDrawingRandom && (
               <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
-                <div className="text-4xl animate-bounce">{examExp.icon}</div>
+                <div className="w-14 h-14 mx-auto rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-900 text-indigo-600 dark:text-indigo-400 flex items-center justify-center animate-bounce">
+                  <ExperimentIcon icon={examExp.icon} className="w-7 h-7" />
+                </div>
                 <div className="text-sm font-extrabold text-indigo-600 dark:text-indigo-400">
                   جاري اختيار تجربة التقييم...
                 </div>
@@ -1771,9 +1817,10 @@ export default function App() {
                           if (el) el.scrollIntoView({ behavior: 'smooth' });
                         }, 100);
                       }}
-                      className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm shadow transition cursor-pointer"
+                      className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm shadow transition cursor-pointer inline-flex items-center justify-center gap-1.5"
                     >
-                      اعتماد الإجابات والتصحيح الفوري ✓
+                      <Check className="w-4 h-4" />
+                      <span>اعتماد الإجابات والتصحيح الفوري</span>
                     </button>
                   </div>
                 </div>
@@ -1804,9 +1851,10 @@ export default function App() {
                               markPillarDone(examExp.id, 'table');
                             }
                           }}
-                          className="px-3.5 py-2 rounded-lg bg-emerald-600 text-white font-bold text-xs shadow cursor-pointer"
+                          className="px-3.5 py-2 rounded-lg bg-emerald-600 text-white font-bold text-xs shadow cursor-pointer inline-flex items-center gap-1"
                         >
-                          حفظ النتيجة ✓
+                          <Check className="w-3.5 h-3.5" />
+                          <span>حفظ النتيجة</span>
                         </button>
                         <button
                           type="button"
@@ -1831,11 +1879,21 @@ export default function App() {
                           <div className="flex items-center justify-between font-extrabold mb-1">
                             <span>{r.title}</span>
                             <span
-                              className={`px-2 py-0.5 rounded text-[11px] ${
+                              className={`px-2 py-0.5 rounded text-[11px] inline-flex items-center gap-1 ${
                                 r.isCorrect ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'
                               }`}
                             >
-                              {r.isCorrect ? 'صحيح ✓' : 'يحتاج مراجعة ✗'}
+                              {r.isCorrect ? (
+                                <>
+                                  <span>صحيح</span>
+                                  <Check className="w-3 h-3" />
+                                </>
+                              ) : (
+                                <>
+                                  <span>يحتاج مراجعة</span>
+                                  <X className="w-3 h-3" />
+                                </>
+                              )}
                             </span>
                           </div>
                           <div className="text-slate-600 dark:text-slate-300">
@@ -1885,7 +1943,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="overflow-x-auto -mx-1 sm:mx-0">
+              <div className="w-full overflow-x-auto">
                 <table className="w-full text-xs border-collapse text-right">
                   <thead>
                     <tr className="bg-slate-900 text-white dark:bg-slate-800">
@@ -1911,8 +1969,12 @@ export default function App() {
                         }`}
                       >
                         <td className="p-2.5 font-extrabold text-slate-900 dark:text-white whitespace-nowrap">
-                          <span className="ml-1">{exp.icon}</span>
-                          {exp.number}. {exp.shortTitle}
+                          <span className="inline-flex items-center gap-1.5">
+                            <ExperimentIcon icon={exp.icon} className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                            <span>
+                              {exp.number}. {exp.shortTitle}
+                            </span>
+                          </span>
                         </td>
                         <td className="p-2.5 font-bold text-indigo-700 dark:text-indigo-300 text-center" dir="ltr">
                           <Latex math={exp.mainFormulaLatex} />

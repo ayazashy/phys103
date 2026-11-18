@@ -1,6 +1,44 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Video, ExternalLink, ChevronDown, ChevronUp, Flame, Zap } from 'lucide-react';
-import type { Experiment } from './experimentsData';
+import {
+  Video,
+  ExternalLink,
+  ChevronDown,
+  ChevronUp,
+  Flame,
+  Zap,
+  MoveVertical,
+  Gauge,
+  ArrowDownToLine,
+  Droplets,
+  Compass,
+  Ruler,
+  Wind,
+  AudioLines,
+  RefreshCw,
+  type LucideIcon
+} from 'lucide-react';
+import type { Experiment, ExperimentIconKey } from './experimentsData';
+
+const EXPERIMENT_ICON_MAP: Record<ExperimentIconKey, LucideIcon> = {
+  spring: MoveVertical,
+  gauge: Gauge,
+  freefall: ArrowDownToLine,
+  fluid: Droplets,
+  vector: Compass,
+  ruler: Ruler,
+  airtrack: Wind,
+  flame: Flame,
+  zap: Zap,
+  sound: AudioLines
+};
+
+export const ExperimentIcon: React.FC<{ icon: ExperimentIconKey; className?: string }> = ({
+  icon,
+  className = 'w-4 h-4'
+}) => {
+  const Icon = EXPERIMENT_ICON_MAP[icon] || Compass;
+  return <Icon className={className} aria-hidden="true" />;
+};
 
 // ==========================================
 // KATEX & LATEX RENDERER
@@ -145,23 +183,23 @@ export const VideoEmbedCard: React.FC<VideoEmbedCardProps> = ({ exp, defaultOpen
     : `${normalizedBase}videos/${exp.id}.mp4`;
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-      <div className="px-4 py-3 sm:px-5 bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2.5">
+    <div className="w-full max-w-full min-w-0 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+      <div className="px-3 py-3 sm:px-5 bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2.5">
+        <div className="flex items-center gap-2.5 min-w-0 flex-1">
           <div className="w-8 h-8 rounded-lg bg-indigo-600/10 dark:bg-indigo-400/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
             <Video className="w-4 h-4" />
           </div>
-          <div>
-            <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white">
+          <div className="min-w-0 flex-1">
+            <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white leading-snug break-words">
               الشرح العملي المصور — {exp.shortTitle}
             </h3>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug break-words">
               عرض تطبيقي لخطوات التجربة وأخذ القراءات داخل المختبر
             </p>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5 max-w-full">
           {expanded && (
             <button
               type="button"
@@ -172,6 +210,7 @@ export const VideoEmbedCard: React.FC<VideoEmbedCardProps> = ({ exp, defaultOpen
               className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 text-[11px] font-bold text-slate-700 dark:text-slate-200 transition cursor-pointer"
               title="التبديل بين المشغل المباشر ومضمّن Google Drive"
             >
+              <RefreshCw className="w-3 h-3 shrink-0" />
               <span>{playerMode === 'native' ? 'مشغل Drive البديل' : 'المشغل المباشر'}</span>
             </button>
           )}
@@ -182,7 +221,7 @@ export const VideoEmbedCard: React.FC<VideoEmbedCardProps> = ({ exp, defaultOpen
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 text-[11px] font-bold text-indigo-600 dark:text-indigo-400 transition"
           >
-            <ExternalLink className="w-3 h-3" />
+            <ExternalLink className="w-3 h-3 shrink-0" />
             <span>فتح في Drive</span>
           </a>
 
@@ -193,12 +232,12 @@ export const VideoEmbedCard: React.FC<VideoEmbedCardProps> = ({ exp, defaultOpen
           >
             {expanded ? (
               <>
-                <ChevronUp className="w-3.5 h-3.5" />
+                <ChevronUp className="w-3.5 h-3.5 shrink-0" />
                 <span>طي الفيديو</span>
               </>
             ) : (
               <>
-                <ChevronDown className="w-3.5 h-3.5" />
+                <ChevronDown className="w-3.5 h-3.5 shrink-0" />
                 <span>عرض الفيديو</span>
               </>
             )}
@@ -207,34 +246,42 @@ export const VideoEmbedCard: React.FC<VideoEmbedCardProps> = ({ exp, defaultOpen
       </div>
 
       {expanded && (
-        <div className="p-3 sm:p-4 bg-slate-950">
-          <div className="relative w-full aspect-video max-w-4xl mx-auto rounded-xl overflow-hidden bg-slate-900 border border-slate-800 shadow-inner flex items-center justify-center">
-            {playerMode === 'native' && !nativeFailed ? (
-              <video
-                key={nativeVideoSrc}
-                src={nativeVideoSrc}
-                controls
-                playsInline
-                preload="metadata"
-                className="w-full h-full bg-black"
-                onError={() => {
-                  setNativeFailed(true);
-                  setPlayerMode('drive');
-                }}
-              >
-                متصفحك لا يدعم تشغيل الفيديو المباشر.
-              </video>
-            ) : (
-              <iframe
-                key={exp.videoDriveId}
-                src={exp.videoEmbedUrl}
-                title={`فيديو شرح تجربة ${exp.title}`}
-                className="w-full h-full border-0"
-                allow="autoplay; fullscreen"
-                allowFullScreen
-                loading="lazy"
-              />
-            )}
+        <div className="p-2 sm:p-4 bg-slate-950 overflow-hidden">
+          <div
+            dir="ltr"
+            className="w-full max-w-4xl mx-auto rounded-xl border border-slate-800 bg-black overflow-hidden shadow-inner"
+          >
+            <div
+              className="relative w-full aspect-video max-w-full overflow-hidden bg-black"
+              style={{ aspectRatio: '16 / 9' }}
+            >
+              {playerMode === 'native' && !nativeFailed ? (
+                <video
+                  key={nativeVideoSrc}
+                  src={nativeVideoSrc}
+                  controls
+                  playsInline
+                  preload="metadata"
+                  className="block absolute inset-0 w-full h-full max-w-full max-h-full object-contain bg-black"
+                  onError={() => {
+                    setNativeFailed(true);
+                    setPlayerMode('drive');
+                  }}
+                >
+                  متصفحك لا يدعم تشغيل الفيديو المباشر.
+                </video>
+              ) : (
+                <iframe
+                  key={exp.videoDriveId}
+                  src={exp.videoEmbedUrl}
+                  title={`فيديو شرح تجربة ${exp.title}`}
+                  className="block absolute inset-0 w-full h-full max-w-full max-h-full border-0"
+                  allow="autoplay; fullscreen"
+                  allowFullScreen
+                  loading="lazy"
+                />
+              )}
+            </div>
           </div>
           {playerMode === 'drive' && (
             <div className="mt-2 text-center text-[11px] text-slate-400">
